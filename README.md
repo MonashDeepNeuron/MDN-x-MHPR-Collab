@@ -1,1 +1,3 @@
 # MDN-x-MHPR-Collab
+
+This project aims to develop a framework capable of using Reinforcement Learning to launch and land a rocket in MHPR's in house, 6 degree-of-freedom rocket simulator SATURN. Given this is a brand new project, this will be built from the ground up, and at the moment is being implemented using an integration of the Satellite with the OpenAI gym environment by creating a custome environment for our specific scenario. The primary aim is then to achieve straight flight, with subsequent goals being to be able to follow set trajectories (using self-correciton as a result of wind gusts, etc.) and finally to land the rocket Space-Ex style!
