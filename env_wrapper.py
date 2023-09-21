@@ -14,6 +14,8 @@ import gc
 
 import numpy as np
 
+from reward_functions import RewardFunction
+
 
 class ActionSpace(Enum):
     DO_NOTHING = 0
@@ -24,17 +26,21 @@ class ActionSpace(Enum):
 
 
 class RocketSim(gym.Env):
-    def __init__(self):
-        self.observation_space = spaces.Dict({  # TODO: Update these to be scaled nicely.
-            "altitude": spaces.Box(-np.inf, np.inf, shape=(1,), dtype=np.float64),
-            "displacement": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
-            "velocity": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
-            "acceleration": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
-            "euler_angles": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
-            "angular_velocity": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64)
-        })
+    def __init__(self, reward_function: RewardFunction):
+        # TODO: Update these to be scaled nicely.
+        # self.observation_space = spaces.Dict({
+        #     "altitude": spaces.Box(-np.inf, np.inf, shape=(1,), dtype=np.float64),
+        #     "displacement": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
+        #     "velocity": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
+        #     "acceleration": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
+        #     "euler_angles": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
+        #     "angular_velocity": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64)
+        # })
 
+        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64)
         self.action_space = spaces.Discrete(5)
+
+        self.reward_function = reward_function
 
         self.monte_carlo = MonteCarlo("mdn_mcConfig.yaml", "mdn_vehicleConfig.yaml")
         self.monte_carlo_config = None
@@ -47,7 +53,7 @@ class RocketSim(gym.Env):
     def _get_obs(self):
         altitude = self.sim.state.getAltitudeGeometric() - self.initial_alt
 
-        # Position shouldnt be returned as it is based on the initial starting location which is config specific
+        # Position shouldn't be returned as it is based on the initial starting location which is config specific
         position = self.sim.state.getPosition(CoordinateSystemType.GEOCENTRIC)
 
         displacement = self.transform_matrix @ (position - self.initial_pos)
@@ -55,14 +61,16 @@ class RocketSim(gym.Env):
         acceleration = self.sim.state.getAcceleration(coord=CoordinateSystemType.BODY, frame=FrameType.EARTH)
         euler_angles = np.rad2deg(self.sim.state.euler_angles)
         angular_velocity = self.sim.state.getAngularVelocity(coord=CoordinateSystemType.BODY, frame=FrameType.EARTH)
-        return {
-            "altitude": np.array([altitude]),  # to make it match the obs_shape
-            "displacement": transpose(displacement),
-            "velocity": transpose(velocity),
-            "acceleration": transpose(acceleration),
-            "euler_angles": euler_angles,
-            "angular_velocity": transpose(angular_velocity)
-        }
+
+        return euler_angles
+        # return {
+        #     "altitude": np.array([altitude]),  # to make it match the obs_shape
+        #     "displacement": transpose(displacement),
+        #     "velocity": transpose(velocity),
+        #     "acceleration": transpose(acceleration),
+        #     "euler_angles": euler_angles,
+        #     "angular_velocity": transpose(angular_velocity)
+        # }
 
     def has_reached_burnout(self):
         return (np.abs(self.sim.propulsion.getForce(self.sim.state)[0][0]) == 0) and (self.sim.state.time > self.sim.state.dt)
@@ -70,8 +78,8 @@ class RocketSim(gym.Env):
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
 
-        # Perform memory cleanup if this isnt the first run
-        # I dont know if this is important as we replace sim each time but cant hurt
+        # Perform memory cleanup if this isn't the first run
+        # I don't know if this is important as we replace sim each time but cant hurt
         if self.sim is not None:
             # Keeping memory usage in check
             del self.sim.aerodynamics.force_coefficients
@@ -120,13 +128,14 @@ class RocketSim(gym.Env):
         self.sim.iteration()
 
         obs = self._get_obs()
-        reward = -1  # placeholder
+        reward = self.reward_function.get_reward(self)
         terminated = self.has_reached_burnout()  # Using this for if sim is over, can be changed.
         truncated = False  # We prob not need this
         return obs, reward, terminated, truncated, {}
 
 
-register(id="rocket_sim-v0", entry_point="env_wrapper:RocketSim")
+def register_env():
+    register(id="RocketSim-v0", entry_point="env_wrapper:RocketSim")
 
 
 # Utility
