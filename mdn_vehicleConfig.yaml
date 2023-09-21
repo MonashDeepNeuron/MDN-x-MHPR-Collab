@@ -1,0 +1,275 @@
+atmosphere:
+  atm_source: earthgram
+  initonce: 1
+  iupdate: 1
+  small_scale: False
+  earthgram_seed:
+    distribution: 'uniform'
+    nominal: 0  # Set to 0 to flag we don't want any perturbations (i.e. just the mean)
+    min_val: 1
+    max_val: 9e8
+    worst: 1
+    best: 9e8
+  wind:
+    source: earthgram
+    # This is added on top of the variation from EarthGRAM, so only use in special cases.
+    wind_multiplier:
+      distribution: 'uniform'
+      nominal: 1
+      min_val: 0.5
+      max_val: 4.5
+      worst: 5
+      best: 0.25
+    # This is added on top of the variation from EarthGRAM, so only use in special cases.
+    wind_rotation:
+      distribution: 'uniform'
+      nominal: 0
+      min_val: 0
+      max_val: 360
+      worst: 180
+      best: 0
+ballast_mass:
+  distribution: 'uniform'
+  min_val: 0
+  max_val: 0
+  nominal: 0
+  worst: 0
+  best: 0
+ballast_cg:
+  distribution: 'uniform'
+  min_val: 0
+  max_val: 0
+  nominal: 0
+  best: 0
+  worst: 0
+enable_6_dof: True
+files:
+  MOI:
+    folder: MOI Data
+    name: LC_V1-005_10x_Lighter
+  body_param:
+    folder: Body Designs
+    name: LC Vehicle V1-005_SATURN_Compatible.ork
+  compound: true
+  drag:
+    folder: Drag Data
+    name: EosCDR2_coefficients
+  folder: Resources
+  geodesy:
+    folder: null
+    name: EGM2008GeoidalUndulations15x15
+  motor:
+    folder: Thrust Curves
+    name: Cesaroni_M3400_1_5
+  tvc_model:
+    folder: Control Models
+    name: test_tvc.pth
+  wind:
+    folder: Weather Model
+    name: wind_model
+frame_cg: # From 10x lighter V1-005 OR
+  distribution: 'uniform'
+  min_val: 1.2
+  max_val: 1.6
+  nominal: 1.4
+  best: 1.6
+  worst: 1.2
+frame_mass: # From 10x light V1-005 OR
+  distribution: 'uniform'
+  min_val: 15.06
+  max_val: 25.06
+  nominal: 20.06
+  best: 20.06
+  worst: 25.06
+initial_altitude: 123.3 # Serp altitude
+initial_angular_velocity:
+- - 0.0
+- - 0.0
+- - 0.0
+initial_latitude: -36.482313 # Serp location
+initial_longitude: 144.017180
+initial_euler_angles:
+  distribution: 'uniform'
+  min_val: [[0.0], [86.0], [0.0]]
+  max_val: [[0.0], [94.0], [0.0]]
+  nominal: [[0.0], [90.0], [0.0]]
+  best: [[0.0], [94.0], [0.0]]
+  worst: [[0.0], [86.0], [0.0]]
+initial_velocity:
+- - 0.0
+- - 0.0
+- - 0.0
+int_method_ascent: integrateRk4
+int_method_descent: integrateARk4
+int_tolerance: 1e-3
+interpolation_type: linear
+launch_rod_length: 0
+lug_moment: false
+logging: false
+tvc:
+  enable_tvc: True
+  clockspeed: # Amount of times per second the model can update (i.e. clockspeed in Hz) (IRL the control surface won't have an infinitely fast update time)
+    distribution: 'uniform'
+    nominal: 20
+    min_val: 1
+    max_val: 100
+    worst: 1
+    best: 100
+  input_size: 9 # Amount of inputs to the model
+  hidden_shape: [250, 250] # The ith element in the list is the amount of neurons in the ith hidden layer
+  output_size: 4 # Amount of outputs from it
+  initial_tilt: # Motor pitch in deg
+    distribution: 'uniform'
+    nominal: 0
+    min_val: 0
+    max_val: 5
+    worst: 5
+    best: 0
+  tilt_stepsize: # How much the tilt increments in deg with each update command.
+    distribution: 'uniform'
+    nominal: 1
+    min_val: 0
+    max_val: 5
+    worst: 0
+    best: 1
+  max_tilt: # Maximum allowable tilt.
+    distribution: 'uniform'
+    nominal: 90
+    min_val: 70
+    max_val: 90
+    worst: 70
+    best: 90
+  initial_pan: # Motor yaw in deg
+    distribution: 'uniform'
+    nominal: 0
+    min_val: 0
+    max_val: 5
+    worst: 5
+    best: 0
+  pan_stepsize: # In deg
+    distribution: 'uniform'
+    nominal: 1
+    min_val: 0
+    max_val: 5
+    worst: 0
+    best: 1
+  max_pan: # Maximum allowable pan.
+    distribution: 'uniform'
+    nominal: 90
+    min_val: 70
+    max_val: 90
+    worst: 70
+    best: 90
+parachutes:
+- cd:
+    distribution: 'uniform'
+    nominal: [[0.15],[0.15],[0.67]]
+    min_val: [[0.12],[0.12],[0.37]]
+    max_val: [[0.18],[0.18],[0.97]]
+    worst: [[0.18],[0.18],[0.97]]
+    best: [[0.12],[0.12],[0.37]]
+  deploy:
+    at_altitude:
+      distribution: 'uniform'
+      min_val: 0
+      max_val: 0
+      nominal: 0
+      best: 0
+      worst: 0
+    at_apogee: true
+  diameter: 0.914
+  enabled: False
+  has_hole: False
+  hole_diam: 0.2
+  name: Drogue
+  unfurl_time: 1.5
+- cd:
+    distribution: 'uniform'
+    nominal: [[0.22],[0.22],[1.65]]
+    min_val: [[0.19],[0.19],[1.35]]
+    max_val: [[0.25],[0.25],[1.95]]
+    worst: [[0.25],[0.25],[1.35]]
+    best: [[0.15],[0.15],[1.95]]
+  deploy:
+    at_altitude:
+      distribution: 'uniform'
+      min_val: 457
+      max_val: 457
+      nominal: 457 # main deployment occurs at 1500ft AGL + baro correction
+      best: 457
+      worst: 457
+    at_apogee: false
+  diameter: 2.438
+  enabled: False
+  has_hole: False
+  hole_diam: 0.4
+  name: Main
+  unfurl_time: 2.5
+plot_types:
+- altitude_geometric
+- vB_E_B_1
+start_time:
+  use_current: False
+  custom: 2022-04-15T11:58:55.816Z
+step_size: 0.0125 # needs to be updated based on config_validator
+stop_on_end_time: False
+stop_on_hit_ground: True
+stop_on_apogee: True
+t_end: 600.0
+verbose: True
+logging_step_size: 0.0
+
+propulsion_multiplier:
+  nominal: 1
+  min_val: 0.9
+  max_val: 1.1
+  worst: 0.9
+  best: 1.1
+  distribution: 'uniform'
+
+moi_multiplier:
+  nominal: 1
+  distribution: 'normal'
+  sd: 0.05
+  mean: 1
+  worst: 0.85
+  best: 1.15
+
+drag_coefficient_multiplier:
+  distribution: 'normal'
+  nominal: [[1.0], [1.0], [1.0]]
+  mean: [[1.0], [1.0], [1.0]]
+  sd: [[0.05], [0.05], [0.05]]
+  worst: [[1.15], [1.15], [1.15]]
+  best: [[0.85], [0.85], [0.85]]
+
+moment_coefficient_multiplier:
+  distribution: 'normal'
+  nominal: [[1.0], [1.0], [1.0]]
+  mean: [[1.0], [1.0], [1.0]]
+  sd: [[0.05], [0.05], [0.05]]
+  worst: [[1.15], [1.15], [1.15]]
+  best: [[0.85], [0.85], [0.85]]
+
+mc_params:
+  - propulsion_multiplier
+  - frame_cg
+  - frame_mass
+  - ballast_cg
+  - ballast_mass
+  - moi_multiplier
+  - initial_euler_angles
+  - drag_coefficient_multiplier
+  - moment_coefficient_multiplier
+  - wind_multiplier
+  - wind_rotation
+  - parachute_cd
+  - parachute_deploy_altitudes
+  - earthgram_seed
+  - clockspeed
+  - initial_tilt
+  - tilt_stepsize
+  - max_tilt
+  - initial_pan
+  - pan_stepsize
+  - max_pan

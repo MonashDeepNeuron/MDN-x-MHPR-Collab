@@ -1,0 +1,17 @@
+# IDE specific configs
+.idea
+
+# The rocket sim code
+Modules
+Resources
+
+# more rocket sim code
+Modules_WIN.zip
+Modules_MAC.zip
+
+# These random things that get generated, prob not needed.
+null
+BLTest.txt
+
+# it has an access tocken in it so prob dont upload.
+.gitmodules
