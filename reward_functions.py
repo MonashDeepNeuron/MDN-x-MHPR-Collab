@@ -9,8 +9,7 @@ class RewardFunctions(Enum):
 
 
 class RewardFunction:
-    def __init__(self, func: RewardFunctions, env):
-        self.env = env
+    def __init__(self, func: RewardFunctions):
         self.function = None
         self.function_enum = func
         self._set_function()
@@ -22,8 +21,8 @@ class RewardFunction:
         self.function_enum = func
         self._set_function()
 
-    def get_reward(self):
-        return self.function(self.env)
+    def get_reward(self, env):
+        return self.function(env)
 
 
 # Define reward functions down here.
