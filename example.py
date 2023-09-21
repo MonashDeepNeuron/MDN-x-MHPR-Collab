@@ -1,8 +1,11 @@
 import gymnasium as gym
-import env_wrapper
+from gymnasium.spaces import flatdim
 
+from env_wrapper import register_env
+from reward_functions import RewardFunction, RewardFunctions
 
-env = gym.make("rocket_sim-v0")
+register_env()
+env = gym.make("RocketSim-v0", reward_function=RewardFunction(RewardFunctions.TestReward))
 
 observation, _ = env.reset()
 print(observation)
