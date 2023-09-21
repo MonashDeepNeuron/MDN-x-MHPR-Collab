@@ -45,6 +45,5 @@ def test_reward(env: None):
 
 
 if __name__ == "__main__":
-    reward_func = RewardFunction(RewardFunctions.TestReward, None)
-    print("Probably working fine" if reward_func.get_reward() == test_reward(None) else "Something went wrong")
-
+    reward_func = RewardFunction(RewardFunctions.TestReward)
+    print("Probably working fine" if reward_func.get_reward(None) == test_reward(None) else "Something went wrong")

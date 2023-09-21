@@ -14,6 +14,7 @@ import gc
 
 import numpy as np
 
+import utils
 from reward_functions import RewardFunction
 
 
@@ -59,7 +60,7 @@ class RocketSim(gym.Env):
         displacement = self.transform_matrix @ (position - self.initial_pos)
         velocity = self.sim.state.getVelocity(coord=CoordinateSystemType.BODY, frame=FrameType.EARTH)
         acceleration = self.sim.state.getAcceleration(coord=CoordinateSystemType.BODY, frame=FrameType.EARTH)
-        euler_angles = np.rad2deg(self.sim.state.euler_angles)
+        euler_angles = self.sim.state.euler_angles
         angular_velocity = self.sim.state.getAngularVelocity(coord=CoordinateSystemType.BODY, frame=FrameType.EARTH)
 
         return euler_angles
@@ -91,9 +92,11 @@ class RocketSim(gym.Env):
 
             gc.collect()  # Runs the garbage collection.
 
+        utils.block_print()
         _, self.monte_carlo_config, _ = self.monte_carlo._generate_cases()[0]
 
         self.sim = self.monte_carlo._initialise_simulation("RocketSim", self.monte_carlo_config, self.sim_count)
+        utils.enable_print()
         self.sim_count += 1
 
         self.initial_alt = self.sim.state.getAltitudeGeometric()
