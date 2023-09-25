@@ -128,7 +128,9 @@ class RocketSim(gym.Env):
         self.sim.tilt = max(-self.sim.max_tilt, min(self.sim.max_tilt, self.sim.tilt))
         self.sim.pan = max(-self.sim.max_pan, min(self.sim.max_pan, self.sim.pan))
 
+        utils.block_print()
         self.sim.iteration()
+        utils.enable_print()
 
         obs = self._get_obs()
         reward = self.reward_function.get_reward(self)

@@ -25,7 +25,10 @@ class MLP(nn.Module):
             if idx < len(layers):
                 model.append(nn.ReLU())  # TODO: Test ['nn.LeakyReLU()']
 
-        if final_activation_function is not None:
+        if type(final_activation_function) == list:
+            model += final_activation_function
+
+        elif final_activation_function is not None:
             model.append(final_activation_function)
 
         # Combine into a model
