@@ -1,5 +1,4 @@
 import gymnasium as gym
-from gymnasium.spaces import flatdim
 
 from env_wrapper import register_env
 from reward_functions import RewardFunction, RewardFunctions
