@@ -1,6 +1,7 @@
 from enum import Enum
 
 import gymnasium as gym
+import torch
 from gymnasium import spaces
 from gymnasium.envs.registration import register
 
@@ -29,16 +30,15 @@ class ActionSpace(Enum):
 class RocketSim(gym.Env):
     def __init__(self, reward_function: RewardFunction):
         # TODO: Update these to be scaled nicely.
-        # self.observation_space = spaces.Dict({
-        #     "altitude": spaces.Box(-np.inf, np.inf, shape=(1,), dtype=np.float64),
-        #     "displacement": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
-        #     "velocity": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
-        #     "acceleration": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
-        #     "euler_angles": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
-        #     "angular_velocity": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64)
-        # })
+        self.observation_space = spaces.Dict({
+            "altitude": spaces.Box(-np.inf, np.inf, shape=(1,), dtype=np.float64),
+            "displacement": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
+            "velocity": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
+            "acceleration": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
+            "euler_angles": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64),
+            "angular_velocity": spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64)
+        })
 
-        self.observation_space = spaces.Box(-np.inf, np.inf, shape=(3,), dtype=np.float64)
         self.action_space = spaces.Discrete(5)
 
         self.reward_function = reward_function
@@ -63,15 +63,14 @@ class RocketSim(gym.Env):
         euler_angles = self.sim.state.euler_angles
         angular_velocity = self.sim.state.getAngularVelocity(coord=CoordinateSystemType.BODY, frame=FrameType.EARTH)
 
-        return euler_angles
-        # return {
-        #     "altitude": np.array([altitude]),  # to make it match the obs_shape
-        #     "displacement": transpose(displacement),
-        #     "velocity": transpose(velocity),
-        #     "acceleration": transpose(acceleration),
-        #     "euler_angles": euler_angles,
-        #     "angular_velocity": transpose(angular_velocity)
-        # }
+        return {
+            "altitude": np.array([altitude]),  # to make it match the obs_shape
+            "displacement": transpose(displacement),
+            "velocity": transpose(velocity),
+            "acceleration": transpose(acceleration),
+            "euler_angles": euler_angles,
+            "angular_velocity": transpose(angular_velocity)
+        }
 
     def has_reached_burnout(self):
         return (np.abs(self.sim.propulsion.getForce(self.sim.state)[0][0]) == 0) and (self.sim.state.time > self.sim.state.dt)
