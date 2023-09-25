@@ -1,6 +1,9 @@
 # IDE specific configs
 .idea
 
+# Local run data
+wandb
+
 # The rocket sim code
 Modules
 Resources
