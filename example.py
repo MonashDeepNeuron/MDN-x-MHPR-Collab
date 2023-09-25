@@ -11,7 +11,7 @@ print(observation)
 
 while True:
     action = env.action_space.sample()
-    observation, reward, terminated, truncated, _ = env.step(0)
+    observation, reward, terminated, truncated, _ = env.step(action)
     print(observation["altitude"], end="\r")
 
     if terminated or truncated:

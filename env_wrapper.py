@@ -72,8 +72,13 @@ class RocketSim(gym.Env):
             "angular_velocity": transpose(angular_velocity)
         }
 
-    def has_reached_burnout(self):
-        return (np.abs(self.sim.propulsion.getForce(self.sim.state)[0][0]) == 0) and (self.sim.state.time > self.sim.state.dt)
+    def has_reached_termination(self):
+        obs = self._get_obs()
+        no_fuel = np.abs(self.sim.propulsion.getForce(self.sim.state)[0][0]) == 0
+        whatever_this_is = self.sim.state.time > self.sim.state.dt
+        is_below_ground = obs["altitude"].item() < -1 # Give it some room
+
+        return (no_fuel and whatever_this_is) or is_below_ground
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
@@ -133,7 +138,7 @@ class RocketSim(gym.Env):
 
         obs = self._get_obs()
         reward = self.reward_function.get_reward(self)
-        terminated = self.has_reached_burnout()  # Using this for if sim is over, can be changed.
+        terminated = self.has_reached_termination()  # Using this for if sim is over, can be changed.
         truncated = False  # We prob not need this
         return obs, reward, terminated, truncated, {}
 
