@@ -152,7 +152,7 @@ class TestingAgent():
         self.update_target_every = update_target_every
         self.target_update_counter = 0
 
-        file_name_model = "./model/lunar_lander.pth"
+        file_name_model = "./model/DDQN_Rocket.pth"
 
         self.Q_eval = Linear_DDQN(input_size=input_size, output_size = output_size, lr = self.lr, hidden_size1=256, hidden_size2 = 256)
         self.Q_eval.load_state_dict(torch.load(file_name_model))
