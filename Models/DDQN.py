@@ -5,6 +5,9 @@ import torch.nn.functional as F
 import numpy as np
 import os
 
+from env_wrapper import register_env
+from reward_functions import RewardFunction, RewardFunctions
+
 class Linear_DDQN(nn.Module):
     def __init__(self, input_size, hidden_size1,hidden_size2, output_size, lr):
         super().__init__()
@@ -163,4 +166,48 @@ class TestingAgent():
         action = torch.argmax(actions).item()
     
         return action
+
+class Train():
+    def __init__(self,agent):
+        self.agent = agent
+        # Agent will be: 
+        # TrainingAgent(gamma=0.99, epsilon=1.0, batch_size=64, output_size=4, eps_end=0.01,input_size=[1], lr=5e-4)
+    
+    def train(self,n_games):
+
+        register_env()
+        env = gym.make("RocketSim-v0", reward_function=RewardFunction(RewardFunctions.TestReward))
+
+        #env = gym.make("LunarLander-v2")
+        agent = self.agent
+        scores, eps_history = [], []
+        high_score = 0
+    
+        for i in range(n_games):
+            score = 0
+            done = False
+            observation = env.reset()
+            while not done:
+                action = agent.choose_action(observation)
+                observation_, reward, done, _, _= env.step(action)
+                score += reward
+                agent.store_transition(observation, action, reward, observation_, done)
+                agent.learn()
+                observation = observation_
+            scores.append(score)
+
+            if i > 60 and score > high_score:
+                agent.Q_eval.save("rocket_sim.pth")
+
+            if score > high_score:
+                high_score = score
+        
+            eps_history.append(agent.epsilon)
+
+            avg_score = np.mean(scores[-100:])
+
+            print('episode ', i, 'score %.2f' % score,
+                'average score %.2f' % avg_score,
+                'epsilon %.2f' % agent.epsilon)
+        x = [i+1 for i in range(n_games)]
     
