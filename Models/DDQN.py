@@ -4,16 +4,16 @@ import torch.optim as optim
 import torch.nn.functional as F
 import numpy as np
 import os
-
+import gymnasium as gym
 from env_wrapper import register_env
 from reward_functions import RewardFunction, RewardFunctions
 
 class Linear_DDQN(nn.Module):
     def __init__(self, input_size, hidden_size1,hidden_size2, output_size, lr):
         super().__init__()
-        self.linear1 = nn.Linear(*input_size, hidden_size1)
-        self.linear2 = nn.Linear(hidden_size1, hidden_size2)
-        self.linear3 = nn.Linear(hidden_size2, output_size)
+        self.linear1 = nn.Linear(*input_size, hidden_size1).float()
+        self.linear2 = nn.Linear(hidden_size1, hidden_size2).float()
+        self.linear3 = nn.Linear(hidden_size2, output_size).float()
 
         self.optimizer = optim.Adam(self.parameters(), lr=lr)
         self.loss = nn.MSELoss()
@@ -21,6 +21,9 @@ class Linear_DDQN(nn.Module):
         self.to(self.device)
 
     def forward(self, x):
+        #ADDED MIGHT NOT NEED
+        x = x.to(self.device).float()
+
         x = F.relu(self.linear1(x))
         x = F.relu(self.linear2(x))
         actions = self.linear3(x)
@@ -61,8 +64,8 @@ class TrainingAgent():
         self.Q_target.eval()
         #torch.nn.utils.clip_grad_norm_(self.Q_eval.parameters(), max_norm=1.0)  # You can adjust the max_norm value as needed
 
-        self.state_memory = np.zeros((self.mem_size, *input_size), dtype=np.float32)
-        self.new_state_memory = np.zeros((self.mem_size, *input_size), dtype=np.float32)
+        self.state_memory = np.zeros((self.mem_size, 3), dtype=object)
+        self.new_state_memory = np.zeros((self.mem_size, 3), dtype=object)
 
         self.action_memory = np.zeros(self.mem_size, dtype=np.int32)
         self.reward_memory = np.zeros(self.mem_size, dtype=np.float32)
@@ -76,6 +79,8 @@ class TrainingAgent():
         self.Q_target.load_state_dict(self.Q_eval.state_dict())
 
     def store_transition(self, state, action, reward, state_, done):
+        state = state[0]
+        #print(state_)
         index = self.mem_cntr % self.mem_size
         self.state_memory[index] = state
         self.new_state_memory[index] = state_
@@ -105,8 +110,13 @@ class TrainingAgent():
 
         batch_index = np.arange(self.batch_size, dtype=np.int32)
 
-        state_batch = torch.tensor(self.state_memory[batch]).to(self.Q_eval.device)
-        new_state_batch = torch.tensor(self.new_state_memory[batch]).to(self.Q_eval.device)
+        # EDITED
+        state_memory_float = np.array(self.state_memory, dtype=np.float32)
+        state_batch = torch.tensor(state_memory_float[batch]).to(self.Q_eval.device)
+
+        new_state_float = np.array(self.new_state_memory, dtype=np.float32)
+        new_state_batch = torch.tensor(new_state_float[batch]).to(self.Q_eval.device)
+
         reward_batch = torch.tensor(self.reward_memory[batch]).to(self.Q_eval.device)
         terminal_batch = torch.tensor(self.terminal_memory[batch]).to(self.Q_eval.device)
 
