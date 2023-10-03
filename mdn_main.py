@@ -95,3 +95,6 @@ if __name__=='__main__':
     if args.save_loc is not None:
         res = MCTools.MonteCarloResults(mc.results)
         res.save(f'{args.save_loc}.pkl')
+
+    import utils
+    print(utils.get_open_file_count())
