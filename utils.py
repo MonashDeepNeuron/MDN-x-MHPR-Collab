@@ -6,6 +6,11 @@ import numpy as np
 import torch
 
 
+def get_open_file_count():
+    import psutil
+    return len(psutil.Process().open_files())
+
+
 def set_global_seed(seed: int):
     torch.manual_seed(seed)
     np.random.seed(seed)
