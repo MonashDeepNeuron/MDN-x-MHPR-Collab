@@ -11,6 +11,7 @@
 #   specific_seeds: {'fraction': ['wind_multiplier']}
 #   iterations: 10
 test_config:
-  fill_value: 'random'
+  fill_value: 'nominal'
+#  specific_seeds: {'nominal': ["tilt_stepsize", "pan_stepsize", "max_pan", "max_tilt", "clockspeed"]}
   specific_seeds: {}
   iterations: 1 # Keep iterations at 1.

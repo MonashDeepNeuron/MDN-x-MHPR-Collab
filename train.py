@@ -1,6 +1,4 @@
 import gymnasium as gym
-import numpy as np
-from gymnasium import spaces
 
 from env_wrapper import register_env
 
@@ -12,12 +10,14 @@ if __name__ == "__main__":
     utils.set_global_seed(0)
 
     hyperparameters_PPO = {
-        'time_steps_per_batch': 8000,
-        'max_time_steps_per_episode': 100,
-        'gamma': 0.99,
-        'updates_per_iteration': 10,
-        'lr': 1e-4,
-        'clip': 0.2,
+        "max_time_steps_per_batch": 8_000,
+        "max_time_steps_per_episode": 2_000,
+        "updates_per_iteration": 5,
+        "save_freq": 10,
+        "save_path": "SavedModels/PPO",
+        "lr": 3e-3,
+        "gamma": 0.99,
+        "clip": 0.2
     }
 
     hyperparameters_DDQN = {

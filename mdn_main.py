@@ -29,7 +29,7 @@ def run_mdn_sim(mc: MonteCarlo, inputs: tuple) -> None:
         if step_count % int(1/(sim.tvc_clockspeed*sim.state.dt)) == 0:
             # Returns current state info
             #TODO IN THE EARTH FRAME - IRL MAY BE IN THE ROCKET'S FRAME (e.g. acceleration measured on board)
-            altitude = sim.state.getAltitudeGeometric() - initial_alt # Zeroed for RL
+            altitude = sim.state.getAltitudeGeometric() - initial_alt  # Zeroed for RL
             sBI__G = sim.state.getPosition(CoordinateSystemType.GEOCENTRIC)
             displacement = T_gG @ (sBI__G - sBI__G_initial)
             vB_E_B = sim.state.getVelocity(coord=CoordinateSystemType.BODY, frame=FrameType.EARTH)
@@ -97,4 +97,5 @@ if __name__=='__main__':
         res.save(f'{args.save_loc}.pkl')
 
     import utils
+    utils.print_all_open_files()
     print(utils.get_open_file_count())

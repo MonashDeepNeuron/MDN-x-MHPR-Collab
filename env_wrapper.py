@@ -76,7 +76,7 @@ class RocketSim(gym.Env):
         obs = self._get_obs()
         no_fuel = np.abs(self.sim.propulsion.getForce(self.sim.state)[0][0]) == 0
         whatever_this_is = self.sim.state.time > self.sim.state.dt
-        is_below_ground = obs["altitude"].item() < -1 # Give it some room
+        is_below_ground = obs["altitude"].item() < -1  # Give it some room
 
         return (no_fuel and whatever_this_is) or is_below_ground
 

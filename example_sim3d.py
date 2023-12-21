@@ -7,7 +7,8 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.animation as animation
 import env_wrapper
 
-env = gym.make("rocket_sim-v0")
+env_wrapper.register_env()
+env = gym.make("RocketSim-v0")
 observation, _ = env.reset()
 
 # lists to store historical data
