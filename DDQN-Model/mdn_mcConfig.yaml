@@ -1,0 +1,16 @@
+# random_config: # Aside from those set as nominal, vary the rest randomly 10 times
+#   fill_value: 'random'
+#   specific_seeds: {'nominal': ['propulsion_multiplier', 'wind_multiplier', 'wind_rotation']}
+#   iterations: 10
+# nominal_config: # A 'usual' sweep
+#   fill_value: 'nominal'
+#   specific_seeds: {}
+#   iterations: 1
+# fraction_config: # One-at-a-time sweep (Keep everything else nominal, and change wind mult linearly)
+#   fill_value: 'nominal'
+#   specific_seeds: {'fraction': ['wind_multiplier']}
+#   iterations: 10
+test_config:
+  fill_value: 'nominal'
+  specific_seeds: {}
+  iterations: 1 # Keep iterations at 1.
